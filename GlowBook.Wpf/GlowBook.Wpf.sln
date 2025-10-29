@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36511.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlowBook.Wpf", "GlowBook.Wpf.csproj", "{5420F60C-B782-4327-A9E2-E04BBC93AC6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlowBook.Model", "..\GlowBook.Model\GlowBook.Model.csproj", "{B8B8709F-5DF3-4150-BB21-01511B9DF6C8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5420F60C-B782-4327-A9E2-E04BBC93AC6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5420F60C-B782-4327-A9E2-E04BBC93AC6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5420F60C-B782-4327-A9E2-E04BBC93AC6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5420F60C-B782-4327-A9E2-E04BBC93AC6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8B8709F-5DF3-4150-BB21-01511B9DF6C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8B8709F-5DF3-4150-BB21-01511B9DF6C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8B8709F-5DF3-4150-BB21-01511B9DF6C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8B8709F-5DF3-4150-BB21-01511B9DF6C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68D65FC7-B2DD-41E0-A213-6033DBD5F962}
+	EndGlobalSection
+EndGlobal
