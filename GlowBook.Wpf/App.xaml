@@ -4,6 +4,65 @@
              xmlns:local="clr-namespace:GlowBook.Wpf"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <Color x:Key="BabyPinkColor">#FFC1CC</Color>
+        <SolidColorBrush x:Key="BabyPink" Color="{StaticResource BabyPinkColor}" />
+        <SolidColorBrush x:Key="PinkDark" Color="#FFB0BD" />
+        <SolidColorBrush x:Key="White" Color="White" />
+        <SolidColorBrush x:Key="White70" Color="#B3FFFFFF" />
+
+        <Style TargetType="Window">
+            <Setter Property="Background" Value="{StaticResource BabyPink}" />
+            <Setter Property="Foreground" Value="{StaticResource White}" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="WindowStartupLocation" Value="CenterScreen"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#FFEC628B"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Color="#33000000"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="H1" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource White}"/>
+        </Style>
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#FFEC628B"/>
+        </Style>
          
     </Application.Resources>
 </Application>
+
