@@ -1,0 +1,29 @@
+﻿<Window x:Class="GlowBook.Wpf.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GlowBook" Height="720" Width="1100">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="{StaticResource PinkDark}" Padding="16">
+    <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="GlowBook" Style="{StaticResource H1}"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="btnHome"      Content="Home"      Click="Home_Click"         Margin="0,0,10,0"/>
+                    <Button x:Name="btnCal"       Content="Kalender"  Click="Appointments_Click" Margin="0,0,10,0"/>
+                    <Button x:Name="btnCustomers" Content="Klanten"   Click="Customers_Click"    Margin="0,0,10,0"/>
+                    <Button x:Name="btnServices"  Content="Diensten"  Click="Services_Click"     Margin="0,0,10,0"/>
+                    <Button x:Name="btnReports"   Content="Rapporten" Click="Reports_Click"      Margin="0,0,10,0"/>
+                    <Button Content="Uitloggen"   Click="Logout_Click"/>
+                </StackPanel>
+
+
+            </Grid>
+        </Border>
+
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+    </DockPanel>
+</Window>

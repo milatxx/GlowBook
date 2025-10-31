@@ -1,0 +1,72 @@
+﻿<Page x:Class="GlowBook.Wpf.Views.Pages.HomeView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:vm="clr-namespace:GlowBook.Wpf.ViewModels"
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="900">
+    <Page.DataContext>
+        <vm:HomeViewModel/>
+    </Page.DataContext>
+
+    <ScrollViewer Padding="24">
+        <StackPanel>
+            <TextBlock Text="Welkom terug!" Style="{StaticResource H1}" Margin="0,0,0,16"/>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>b
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Afspraken vandaag" Style="{StaticResource CardTitle}"/>
+                        <ItemsControl ItemsSource="{Binding TodayAppointments}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                        <TextBlock Text="{Binding Item1}" Width="80"/>
+                                        <TextBlock Text="{Binding Item2}"/>
+                                        <TextBlock Text=" • "/>
+                                        <TextBlock Text="{Binding Item3}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Klanten" Style="{StaticResource CardTitle}"/>
+                        <TextBlock Text="{Binding CustomerCount, StringFormat={}{0} totaal}" Margin="0,8,0,0"/>
+                        <Button Content="Beheer klanten" Margin="0,12,0,0" Width="180"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Populaire dienst" Style="{StaticResource CardTitle}"/>
+                        <TextBlock Text="{Binding TopServiceName}" Margin="0,8,0,0"/>
+                        <TextBlock Text="{Binding TopServiceCount, StringFormat={}{0} boekingen deze maand}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Omzet deze week" Style="{StaticResource CardTitle}"/>
+                        <TextBlock Text="{Binding RevenueThisWeek, StringFormat=€ {0:N2}}" Margin="0,8,0,0"/>
+                        <Button Content="Bekijk rapport" Margin="0,12,0,0" Width="180"/>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
