@@ -27,7 +27,7 @@ namespace GlowBook.Wpf.Views.Pages
             if (Grid.SelectedItem is Staff item)
             {
                 try { VM.Save(item); DialogService.Info("Opgeslagen."); VM.Load(); }
-                catch (System.Exception ex) { DialogService.Error(ex.Message); }
+                catch (System.Exception ex) { DialogService.Error($"Opslaan mislukt: {ex.Message}"); }
             }
         }
 
@@ -36,7 +36,7 @@ namespace GlowBook.Wpf.Views.Pages
             if (Grid.SelectedItem is Staff item && DialogService.Confirm("Verwijderen?"))
             {
                 try { VM.SoftDelete(item); VM.Items.Remove(item); }
-                catch (System.Exception ex) { DialogService.Error(ex.Message); }
+                catch (System.Exception ex) { DialogService.Error($"Verwijderen mislukt: {ex.Message}"); }
             }
         }
     }
