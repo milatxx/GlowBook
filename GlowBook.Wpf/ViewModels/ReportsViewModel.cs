@@ -8,67 +8,111 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.ComponentModel;
 
 namespace GlowBook.Wpf.ViewModels
 {
-    public class ReportsViewModel
+    public class ReportsViewModel : INotifyPropertyChanged
     {
-        public DateTime From { get; set; } = DateTime.Today.AddDays(-7);
-        public DateTime To { get; set; } = DateTime.Today;
+        private DateTime _from = DateTime.Today.AddDays(-7);
+        private DateTime _to = DateTime.Today;
+        private decimal _revenueTotal;
 
-        public decimal RevenueTotal { get; private set; }
+        public DateTime From
+        {
+            get => _from;
+            set { _from = value; OnPropertyChanged(); }
+        }
+
+        public DateTime To
+        {
+            get => _to;
+            set { _to = value; OnPropertyChanged(); }
+        }
+
+        public decimal RevenueTotal
+        {
+            get => _revenueTotal;
+            private set { _revenueTotal = value; OnPropertyChanged(); }
+        }
+
+        private static DateTime EndOfDay(DateTime d) => d.Date.AddDays(1).AddTicks(-1);
+        private AppDbContext Db() => App.Services.GetRequiredService<AppDbContext>();
 
         public void Calculate()
         {
-            using var db = App.Services.GetRequiredService<AppDbContext>();
-            var q = db.AppointmentServices.Include(x => x.Service)
-                    .Include(x => x.Appointment)
-                    .Where(x => x.Appointment.Start >= From && x.Appointment.Start < To.AddDays(1));
+            using var db = Db();
 
-            RevenueTotal = q.Sum(x => x.Service.Price * x.Qty);
+            var q = db.AppointmentServices
+                .Include(x => x.Service)
+                .Include(x => x.Appointment)
+                .Where(x => !x.IsDeleted
+                            && !x.Appointment.IsDeleted
+                            && x.Appointment.Start >= From
+                            && x.Appointment.Start <= EndOfDay(To));
+
+            // voorkom InvalidOperation bij lege reeks
+            RevenueTotal = q.Select(x => x.Service.Price * x.Qty).DefaultIfEmpty(0m).Sum();
         }
 
         public string ExportCsv(string path)
         {
-            using var db = App.Services.GetRequiredService<AppDbContext>();
-            var q = db.AppointmentServices.Include(x => x.Service).Include(x => x.Appointment)
-                    .Include(x => x.Appointment.Customer)
-                    .Where(x => x.Appointment.Start >= From && x.Appointment.Start < To.AddDays(1))
-                    .OrderBy(x => x.Appointment.Start)
-                    .Select(x => new {
-                        Date = x.Appointment.Start,
-                        Customer = x.Appointment.Customer.Name,
-                        Service = x.Service.Name,
-                        Price = x.Service.Price,
-                        Qty = x.Qty
-                    }).ToList();
+            using var db = Db();
+
+            var rows = db.AppointmentServices
+                .Include(x => x.Service)
+                .Include(x => x.Appointment).ThenInclude(a => a.Customer)
+                .Where(x => !x.IsDeleted
+                            && !x.Appointment.IsDeleted
+                            && x.Appointment.Start >= From
+                            && x.Appointment.Start <= EndOfDay(To))
+                .OrderBy(x => x.Appointment.Start)
+                .Select(x => new
+                {
+                    Date = x.Appointment.Start,
+                    Customer = x.Appointment.Customer.Name,
+                    Service = x.Service.Name,
+                    Price = x.Service.Price,
+                    Qty = x.Qty,
+                    Total = x.Service.Price * x.Qty
+                })
+                .ToList();
 
             var sb = new StringBuilder();
-            sb.AppendLine("Date,Customer,Service,Price,Qty,Total");
-            foreach (var r in q)
+            sb.AppendLine("Date;Customer;Service;Price;Qty;Total");
+            foreach (var r in rows)
             {
-                var tot = r.Price * r.Qty;
-                sb.AppendLine($"{r.Date:yyyy-MM-dd HH:mm},{r.Customer},{r.Service},{r.Price},{r.Qty},{tot}");
+                sb.AppendLine($"{r.Date:yyyy-MM-dd HH\\:mm};{r.Customer};{r.Service};{r.Price.ToString("0.00", CultureInfo.InvariantCulture)};{r.Qty};{r.Total.ToString("0.00", CultureInfo.InvariantCulture)}");
             }
+
             File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
             return path;
         }
 
         public string ExportPdf(string path)
         {
+            // altijd eerst herberekenen
             Calculate();
+
             var doc = new PdfDocument();
             var page = doc.AddPage();
             var gfx = XGraphics.FromPdfPage(page);
-            var font = new XFont("Segoe UI", 18, XFontStyle.Bold);
-            var small = new XFont("Segoe UI", 12, XFontStyle.Regular);
+            var fontTitle = new XFont("Segoe UI", 16, XFontStyleEx.Bold);
+            var font = new XFont("Segoe UI", 11, XFontStyleEx.Regular);
 
-            gfx.DrawString("GlowBook Rapport", font, XBrushes.Black, new XRect(30, 30, page.Width, 30));
-            gfx.DrawString($"Periode: {From:dd/MM/yyyy} - {To:dd/MM/yyyy}", small, XBrushes.Black, 30, 70);
-            gfx.DrawString($"Omzet: € {RevenueTotal:N2}", small, XBrushes.Black, 30, 90);
+            double y = 40;
+            gfx.DrawString("GlowBook Rapport", fontTitle, XBrushes.Black, 40, y); y += 20;
+            gfx.DrawString($"Periode: {From:dd/MM/yyyy} - {To:dd/MM/yyyy}", font, XBrushes.Black, 40, y); y += 16;
+            gfx.DrawString($"Omzet: € {RevenueTotal:N2}", font, XBrushes.Black, 40, y);
 
             doc.Save(path);
             return path;
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
+

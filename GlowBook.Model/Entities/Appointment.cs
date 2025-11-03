@@ -18,4 +18,4 @@ namespace GlowBook.Model.Entities
         public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
     }
 }
-}
+
