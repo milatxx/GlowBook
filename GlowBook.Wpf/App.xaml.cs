@@ -34,8 +34,7 @@ namespace GlowBook.Wpf
                         o.Password.RequiredLength = 6;
                     })
                     .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<AppDbContext>()
-                    .AddDefaultTokenProviders();
+                    .AddEntityFrameworkStores<AppDbContext>();
 
               
                 })
