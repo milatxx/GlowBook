@@ -1,11 +1,12 @@
 ﻿using GlowBook.Model.Data;
+using GlowBook.Model.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Windows;
 using System;
-using GlowBook.Model.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+using System.IO;
+using System.Windows;
 
 namespace GlowBook.Wpf
 {
@@ -23,7 +24,17 @@ namespace GlowBook.Wpf
                 .ConfigureServices(services =>
                 {
                     services.AddDbContext<AppDbContext>(opt =>
-                        opt.UseSqlite("Data Source=glowbook.db"));
+                    {
+                        var dataDir = Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                            "GlowBook");
+                        Directory.CreateDirectory(dataDir);
+                        var dbPath = Path.Combine(dataDir, "glowbook.db");
+
+                        opt.UseSqlite(
+                            $"Data Source={dbPath}",
+                            b => b.MigrationsAssembly("GlowBook.Model"));
+                    });
 
                     services.AddIdentityCore<ApplicationUser>(o =>
                     {
@@ -63,7 +74,7 @@ namespace GlowBook.Wpf
             HostApp.Dispose();
             base.OnExit(e);
         }
-
+                    
         // Minimalistische seeding (rollen + admin + demodata))
         private static async Task SeedAsync(IServiceProvider sp)
         {
