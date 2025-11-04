@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using System.Windows;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 namespace GlowBook.Wpf
 {
@@ -45,29 +48,53 @@ namespace GlowBook.Wpf
                         o.Password.RequiredLength = 6;
                     })
                     .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<AppDbContext>();
+                    .AddEntityFrameworkStores<AppDbContext>()
+                    .AddSignInManager();
 
-              
+
                 })
                 .Build();
 
             // DB migreren plus seed
-
-            using(var scope = Services.CreateScope())
+            try
             {
+                using var scope = Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 await db.Database.MigrateAsync();
-                await SeedAsync(scope.ServiceProvider);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"De databank kon niet worden bijgewerkt:\n{ex.Message}",
+                    "Database fout",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                
+                Shutdown();
+                return;
             }
 
             // splash -> login
-            var splash = new Views.SplashScreen();
-            splash.Show();
-            splash.Close();
+            try
+            { 
+                var splash = new Views.SplashScreen();
+                splash.Show();
+                splash.Close();
 
-            var login = new Views.LoginWindow();
-            login.Show();
+                var login = new Views.LoginWindow();
+                login.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Er trad een fout op tijdens het starten van de UI:\n{ex.Message}",
+                    "Startfout",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Shutdown();
+            }
         }
+
 
         protected override void OnExit(ExitEventArgs e)
         {
@@ -75,33 +102,6 @@ namespace GlowBook.Wpf
             base.OnExit(e);
         }
                     
-        // Minimalistische seeding (rollen + admin + demodata))
-        private static async Task SeedAsync(IServiceProvider sp)
-        {
-            using var scope = sp.CreateScope();
-            var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            if (!await roleMgr.RoleExistsAsync("Admin")) await roleMgr.CreateAsync(new IdentityRole("Admin"));
-            if (!await roleMgr.RoleExistsAsync("User")) await roleMgr.CreateAsync(new IdentityRole("User"));
-
-            var admin = await userMgr.FindByNameAsync("admin@glowbook");
-            if (admin == null)
-            {
-                admin = new ApplicationUser { UserName = "admin@glowbook", Email = "admin@glowbook" };
-                await userMgr.CreateAsync(admin, "Admin123!");
-                await userMgr.AddToRoleAsync(admin, "Admin");
-            }
-
-            if (!db.Customers.Any())
-            {
-                db.Customers.Add(new Customer { Name = "Anna V.", Email = "anna@example.com" });
-                db.Staff.Add(new Staff { Name = "Tamara", Role = "Beautician" });
-                db.Services.Add(new Service { Name = "Wimperlift", DurationMin = 60, Price = 65m });
-                await db.SaveChangesAsync();
-            }
-        }
     }
 }
 
