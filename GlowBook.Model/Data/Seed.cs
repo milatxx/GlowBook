@@ -15,39 +15,7 @@ namespace GlowBook.Model.Data
             var empRole = new IdentityRole { Id = "role-employee", Name = "Employee", NormalizedName = "EMPLOYEE" };
             b.Entity<IdentityRole>().HasData(adminRole, empRole);
 
-            // Users
-            var hasher = new PasswordHasher<ApplicationUser>();
-            var admin = new ApplicationUser
-            {
-                Id = "user-admin",
-                UserName = "admin@glowbook.local",
-                NormalizedUserName = "ADMIN@GLOWBOOK.LOCAL",
-                Email = "admin@glowbook.local",
-                NormalizedEmail = "ADMIN@GLOWBOOK.LOCAL",
-                EmailConfirmed = true,
-                DisplayName = "Beheerder",
-                SecurityStamp = Guid.NewGuid().ToString("D")
-            };
-            admin.PasswordHash = hasher.HashPassword(admin, "Admin123!");
-
-            var emp = new ApplicationUser
-            {
-                Id = "user-employee",
-                UserName = "employee@glowbook.local",
-                NormalizedUserName = "EMPLOYEE@GLOWBOOK.LOCAL",
-                Email = "employee@glowbook.local",
-                NormalizedEmail = "EMPLOYEE@GLOWBOOK.LOCAL",
-                EmailConfirmed = true,
-                DisplayName = "Medewerker",
-                SecurityStamp = Guid.NewGuid().ToString("D")
-            };
-            emp.PasswordHash = hasher.HashPassword(emp, "Employee123!");
-
-            b.Entity<ApplicationUser>().HasData(admin, emp);
-            b.Entity<IdentityUserRole<string>>().HasData(
-                new IdentityUserRole<string> { UserId = "user-admin", RoleId = "role-admin" },
-                new IdentityUserRole<string> { UserId = "user-employee", RoleId = "role-employee" }
-            );
+            
 
             // Basisdata
             b.Entity<Service>().HasData(

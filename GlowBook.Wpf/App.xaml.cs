@@ -48,8 +48,8 @@ namespace GlowBook.Wpf
                         o.Password.RequiredLength = 6;
                     })
                     .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<AppDbContext>()
-                    .AddSignInManager();
+                    .AddEntityFrameworkStores<AppDbContext>();
+
 
 
                 })
@@ -61,6 +61,8 @@ namespace GlowBook.Wpf
                 using var scope = Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 await db.Database.MigrateAsync();
+
+
             }
             catch (Exception ex)
             {
@@ -73,6 +75,57 @@ namespace GlowBook.Wpf
                 Shutdown();
                 return;
             }
+
+            try
+            {
+                using var scope2 = Services.CreateScope();
+                var roleManager = scope2.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = scope2.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                // rollen
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                    await roleManager.CreateAsync(new IdentityRole("Admin"));
+                if (!await roleManager.RoleExistsAsync("Employee"))
+                    await roleManager.CreateAsync(new IdentityRole("Employee"));
+
+                // admin
+                var admin = await userManager.FindByEmailAsync("admin@glowbook.local");
+                if (admin == null)
+                {
+                    admin = new ApplicationUser
+                    {
+                        UserName = "admin@glowbook.local",
+                        Email = "admin@glowbook.local",
+                        EmailConfirmed = true,
+                        DisplayName = "Beheerder",
+                        IsActive = true
+                    };
+                    await userManager.CreateAsync(admin, "Admin123!");
+                    await userManager.AddToRoleAsync(admin, "Admin");
+                }
+
+                // employee
+                var emp = await userManager.FindByEmailAsync("employee@glowbook.local");
+                if (emp == null)
+                {
+                    emp = new ApplicationUser
+                    {
+                        UserName = "employee@glowbook.local",
+                        Email = "employee@glowbook.local",
+                        EmailConfirmed = true,
+                        DisplayName = "Medewerker",
+                        IsActive = true
+                    };
+                    await userManager.CreateAsync(emp, "Employee123!");
+                    await userManager.AddToRoleAsync(emp, "Employee");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Seeden van users/rollen mislukt: {ex.Message}", "Seed fout",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
 
             // splash -> login
             try

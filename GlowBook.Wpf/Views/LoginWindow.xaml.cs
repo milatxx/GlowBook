@@ -13,13 +13,13 @@ namespace GlowBook.Wpf.Views
     public partial class LoginWindow : Window
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+
 
         public LoginWindow()
         {
             InitializeComponent();
             _userManager = App.Services.GetRequiredService<UserManager<ApplicationUser>>();
-            _signInManager = App.Services.GetRequiredService<SignInManager<ApplicationUser>>();
+
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -45,14 +45,12 @@ namespace GlowBook.Wpf.Views
                     return;
                 }
 
-                
-                var result = await _signInManager.CheckPasswordSignInAsync(
-                    user, pass, lockoutOnFailure: true);
+                var ok = await _userManager.CheckPasswordAsync(user, pass);
 
-                if (result.Succeeded)
+                if (ok)
                 {
-                    // voor Identity-flow
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    // faal teller resetten
+                    await _userManager.ResetAccessFailedCountAsync(user);
 
                     var win = new MainWindow(user);
                     Application.Current.MainWindow = win;
@@ -60,21 +58,20 @@ namespace GlowBook.Wpf.Views
                     Close();
                     return;
                 }
-
-                if (result.IsLockedOut)
+                else
                 {
-                    Error("Account tijdelijk geblokkeerd door te veel mislukte pogingen.");
-                    return;
+                    // lockout mechanisme bijhouden
+                    await _userManager.AccessFailedAsync(user);
+                    if (await _userManager.IsLockedOutAsync(user))
+                    {
+                        Error("Account tijdelijk geblokkeerd door te veel mislukte pogingen.");
+                        return;
+                    }
+
+                    Warn("Wachtwoord onjuist.");
                 }
 
-                if (result.IsNotAllowed)
-                {
-                    Warn("Je account mag nog niet inlogen (bv. e-mail niet bevestigd).");
-                    return;
-                }
 
-                // Default
-                Warn("Wachtwoord onjuist.");
             }
             catch (System.Exception ex)
             {
