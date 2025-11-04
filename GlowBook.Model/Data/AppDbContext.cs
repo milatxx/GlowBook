@@ -22,13 +22,6 @@ namespace GlowBook.Model.Data
         {
             base.OnModelCreating(b);
 
-            // Soft delete global filters
-            b.Entity<Customer>().HasQueryFilter(x => !x.IsDeleted);
-            b.Entity<Staff>().HasQueryFilter(x => !x.IsDeleted);
-            b.Entity<Service>().HasQueryFilter(x => !x.IsDeleted);
-            b.Entity<Appointment>().HasQueryFilter(x => !x.IsDeleted);
-            b.Entity<AppointmentService>().HasQueryFilter(x => !x.IsDeleted);
-
             // Relaties
             b.Entity<AppointmentService>()
                 .HasOne(x => x.Appointment)
@@ -53,6 +46,22 @@ namespace GlowBook.Model.Data
                 .WithMany(s => s.Appointments)
                 .HasForeignKey(a => a.StaffId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Unieke combinaties
+            b.Entity<AppointmentService>()
+                .HasIndex(x => new { x.AppointmentId, x.ServiceId })
+                .IsUnique();
+
+            b.Entity<Customer>().HasQueryFilter(x => !x.IsDeleted);
+            b.Entity<Staff>().HasQueryFilter(x => !x.IsDeleted);
+            b.Entity<Service>().HasQueryFilter(x => !x.IsDeleted);
+            b.Entity<Appointment>().HasQueryFilter(x => !x.IsDeleted);
+            b.Entity<AppointmentService>().HasQueryFilter(x => !x.IsDeleted);
+
+            // Decimal precisie
+            b.Entity<Service>()
+            .Property(s => s.Price)
+            .HasPrecision(10, 2);
 
 
             // Seed basis via aparte klasse

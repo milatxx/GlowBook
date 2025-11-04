@@ -10,9 +10,17 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+
 
 namespace GlowBook.Wpf.ViewModels
 {
+    public sealed class ServiceRevenueRow
+    {
+        public string Service { get; init; } = "";
+        public decimal Revenue { get; init; }
+    }
+
     public class ReportsViewModel : INotifyPropertyChanged
     {
         private DateTime _from = DateTime.Today.AddDays(-7);
@@ -37,6 +45,10 @@ namespace GlowBook.Wpf.ViewModels
             private set { _revenueTotal = value; OnPropertyChanged(); }
         }
 
+        public ObservableCollection<ServiceRevenueRow> RevenuePerService { get; } = new();
+        public ObservableCollection<ServiceRevenueRow> RevenuePerService_MethodSyntax { get; } = new(); 
+
+
         private static DateTime EndOfDay(DateTime d) => d.Date.AddDays(1).AddTicks(-1);
         private AppDbContext Db() => App.Services.GetRequiredService<AppDbContext>();
 
@@ -55,6 +67,30 @@ namespace GlowBook.Wpf.ViewModels
             // voorkom InvalidOperation bij lege reeks
             RevenueTotal = q.Select(x => x.Service.Price * x.Qty).DefaultIfEmpty(0m).Sum();
         }
+
+        public void RefreshRevenuePerService_QuerySyntax()
+        {
+            using var db = Db();
+
+            // query syntax
+            var q =
+                from a in db.Appointments
+                where a.Start >= From && a.Start <= EndOfDay(To) && a.Status == "Done"
+                from link in a.AppointmentServices
+                group link by link.Service.Name into g
+                select new ServiceRevenueRow
+                {
+                    Service = g.Key,
+                    Revenue = g.Sum(x => x.Qty * x.Service.Price)
+                };
+
+            var rows = q.OrderBy(r => r.Service).ToList();
+
+            RevenuePerService.Clear();
+            foreach (var r in rows)
+                RevenuePerService.Add(r);
+        }
+
 
         public string ExportCsv(string path)
         {

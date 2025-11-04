@@ -55,7 +55,7 @@ namespace GlowBook.Wpf.Views.Windows
             TxtStart.Text = _appointment.Start.ToString("HH\\:mm");
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
+        private async void Save_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -83,10 +83,29 @@ namespace GlowBook.Wpf.Views.Windows
                     return;
                 }
 
-                // CONFLCTDETECTIE: overlappende afspraken voor dezelfde medewerker
-                bool conflict = _db.Appointments
-                    .Where(a => !a.IsDeleted && a.StaffId == staffId && a.Id != _appointment.Id)
-                    .Any(a => a.Start < end && start < a.End);
+                // Openingstijden
+                var open = TimeSpan.FromHours(9);
+                var close = TimeSpan.FromHours(18);
+                if (start.TimeOfDay < open || end.TimeOfDay > close)
+                {
+
+                    MessageBox.Show("Buiten openingstijd (09:00–18:00).");
+                    return;
+                }
+
+                // Minimale duur + buffer
+                var buffer = TimeSpan.FromMinutes(5);
+                var minimaleDuur = TimeSpan.FromMinutes(10) + buffer;
+                if (end - start < minimaleDuur)
+                {
+                    MessageBox.Show($"Duur te kort (minimaal {(int)minimaleDuur.TotalMinutes} minuten incl. buffer).");
+                    return;
+                }
+
+                // Overlap (sluit geannuleerde afspraken uit en sluit huidige afspraak uit)
+                bool conflict = await _db.Appointments
+                    .Where(a => a.StaffId == staffId.Value && a.Status != "Cancelled" && a.Id != _appointment.Id)
+                    .AnyAsync(a => start < a.End && end > a.Start);
 
                 if (conflict)
                 {
@@ -100,8 +119,8 @@ namespace GlowBook.Wpf.Views.Windows
                 _appointment.Start = start;
                 _appointment.End = end;
 
-                var link = _db.AppointmentServices
-                              .FirstOrDefault(x => x.AppointmentId == _appointment.Id);
+                var link = await _db.AppointmentServices
+                              .FirstOrDefaultAsync(x => x.AppointmentId == _appointment.Id);
                 if (link == null)
                 {
                     link = new AppointmentService
@@ -117,7 +136,7 @@ namespace GlowBook.Wpf.Views.Windows
                     link.ServiceId = svcId.Value;
                 }
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
                 DialogResult = true;
             }
             catch (Exception ex)

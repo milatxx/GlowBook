@@ -23,19 +23,36 @@ namespace GlowBook.Wpf.Views
             _userManager = App.Services.GetRequiredService<UserManager<ApplicationUser>>();
             Loaded += async (_, __) =>
             {
-                await ApplyRoleVisibility();
+                await ApplyRoleVisibilityAsync();
                 MainFrame.Content = new HomeView();
             };
         }
 
-        private async Task ApplyRoleVisibility()
+        private async Task ApplyRoleVisibilityAsync()
         {
-            var roles = await _userManager.GetRolesAsync(_user);
-            bool isAdmin = roles.Contains("Admin");
+            try
+            {
+                if (_user == null)
+                {
+                    MessageBox.Show("Geen ingelogde gebruiker gevonden. Meld opnieuw aan.", "GlowBook", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                var roles = await _userManager.GetRolesAsync(_user);
+                bool isAdmin = roles.Contains("Admin");
 
-            btnReports.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
-            btnServices.Visibility = isAdmin ? Visibility.Visible : Visibility.Visible;
-            // kalender en klanten zichtbaarr voor beide
+                btnReports.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
+                // services altijd zichtbaar maar alleen Admins mogen aanpassen
+                btnServices.Visibility = Visibility.Visible;
+                btnServices.IsEnabled = isAdmin;
+                // kalender en klanten zichtbaarr voor beide
+                btnCal.Visibility = Visibility.Visible;
+                btnCustomers.Visibility = Visibility.Visible;
+            }
+
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Fout bij toepassen van rollen: {ex.Message}", "GlowBook", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Home_Click(object s, RoutedEventArgs e) => MainFrame.Content = new HomeView();
@@ -47,25 +64,23 @@ namespace GlowBook.Wpf.Views
         private void Logout_Click(object s, RoutedEventArgs e)
         {
             // login modaal, wacht op resultaat
-            var login = new LoginWindow();
+            var login = new LoginWindow { Owner = this };
             var ok = login.ShowDialog() == true;
 
             if (!ok)
-            {
-                // gebruiker annuleert -> blijft op de huidige mainwinow
-                return;
-            }
+            return;
+            
 
             
             // succesvol opnieuw ingelogd: open nieuw mainwinwow met nieuwe user
             var newMain = new MainWindow(login.AuthenticatedUser!);
-            newMain.Show();
 
             // zet nieuwe als mainwindow -> app blijft open
             Application.Current.MainWindow = newMain;
+            newMain.Show();
 
             // sluit oude mainwindow
-            this.Close();
+            Close();
         }
     }
 }

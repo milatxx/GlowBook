@@ -79,19 +79,22 @@ namespace GlowBook.Wpf
 
             try
             {
-                using var scope2 = Services.CreateScope();
-                var roleManager = scope2.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var userManager = scope2.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                using var scope = Services.CreateScope();
+                var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-                // rollen
-                if (!await roleManager.RoleExistsAsync("Admin"))
-                    await roleManager.CreateAsync(new IdentityRole("Admin"));
-                if (!await roleManager.RoleExistsAsync("Employee"))
-                    await roleManager.CreateAsync(new IdentityRole("Employee"));
+                async Task EnsureRoleAsync(string name)
+                {
+                    if (!await roleMgr.RoleExistsAsync(name))
+                        await roleMgr.CreateAsync(new IdentityRole(name));
+                }
+
+                await EnsureRoleAsync("Admin");
+                await EnsureRoleAsync("Employee");
 
                 // admin
-                var admin = await userManager.FindByEmailAsync("admin@glowbook.local");
-                if (admin == null)
+                var admin = await userMgr.FindByEmailAsync("admin@glowbook.local");
+                if (admin is null)
                 {
                     admin = new ApplicationUser
                     {
@@ -101,13 +104,16 @@ namespace GlowBook.Wpf
                         DisplayName = "Beheerder",
                         IsActive = true
                     };
-                    await userManager.CreateAsync(admin, "Admin123!");
-                    await userManager.AddToRoleAsync(admin, "Admin");
+                    await userMgr.CreateAsync(admin, "Admin123!");
+
                 }
+                if (!await userMgr.IsInRoleAsync(admin, "Admin"))
+                    await userMgr.AddToRoleAsync(admin, "Admin");
+            
 
                 // employee
-                var emp = await userManager.FindByEmailAsync("employee@glowbook.local");
-                if (emp == null)
+                var emp = await userMgr.FindByEmailAsync("employee@glowbook.local");
+                if (emp is null)
                 {
                     emp = new ApplicationUser
                     {
@@ -117,9 +123,10 @@ namespace GlowBook.Wpf
                         DisplayName = "Medewerker",
                         IsActive = true
                     };
-                    await userManager.CreateAsync(emp, "Employee123!");
-                    await userManager.AddToRoleAsync(emp, "Employee");
+                    await userMgr.CreateAsync(emp, "Employee123!");
                 }
+                if (!await userMgr.IsInRoleAsync(emp, "Employee"))
+                    await userMgr.AddToRoleAsync(emp, "Employee");
             }
             catch (Exception ex)
             {
