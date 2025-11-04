@@ -12,6 +12,8 @@ namespace GlowBook.Wpf.Views
     /// </summary>
     public partial class LoginWindow : Window
     {
+        public ApplicationUser? AuthenticatedUser { get; private set; }   
+
         private readonly UserManager<ApplicationUser> _userManager;
 
 
@@ -52,9 +54,8 @@ namespace GlowBook.Wpf.Views
                     // faal teller resetten
                     await _userManager.ResetAccessFailedCountAsync(user);
 
-                    var win = new MainWindow(user);
-                    Application.Current.MainWindow = win;
-                    win.Show();
+                    AuthenticatedUser = user;
+                    DialogResult = true;
                     Close();
                     return;
                 }

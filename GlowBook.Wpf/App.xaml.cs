@@ -1,14 +1,15 @@
 ﻿using GlowBook.Model.Data;
 using GlowBook.Model.Entities;
+using GlowBook.Wpf.Views;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
-using System.Windows;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 
 namespace GlowBook.Wpf
@@ -127,7 +128,7 @@ namespace GlowBook.Wpf
             }
 
 
-            // splash -> login
+            // splash -> login -> main
             try
             { 
                 var splash = new Views.SplashScreen();
@@ -135,7 +136,18 @@ namespace GlowBook.Wpf
                 splash.Close();
 
                 var login = new Views.LoginWindow();
-                login.Show();
+                var ok = login.ShowDialog() == true;
+
+                if (!ok)
+                {
+                    Shutdown();
+                    return;
+                }
+
+                var main = new MainWindow(login.AuthenticatedUser!);         
+                Application.Current.MainWindow = main;
+                main.Show();
+
             }
             catch (Exception ex)
             {

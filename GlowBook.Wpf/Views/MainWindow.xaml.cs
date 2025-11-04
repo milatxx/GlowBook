@@ -46,8 +46,26 @@ namespace GlowBook.Wpf.Views
 
         private void Logout_Click(object s, RoutedEventArgs e)
         {
-            new LoginWindow().Show();
-            Close();
+            // login modaal, wacht op resultaat
+            var login = new LoginWindow();
+            var ok = login.ShowDialog() == true;
+
+            if (!ok)
+            {
+                // gebruiker annuleert -> blijft op de huidige mainwinow
+                return;
+            }
+
+            
+            // succesvol opnieuw ingelogd: open nieuw mainwinwow met nieuwe user
+            var newMain = new MainWindow(login.AuthenticatedUser!);
+            newMain.Show();
+
+            // zet nieuwe als mainwindow -> app blijft open
+            Application.Current.MainWindow = newMain;
+
+            // sluit oude mainwindow
+            this.Close();
         }
     }
 }
