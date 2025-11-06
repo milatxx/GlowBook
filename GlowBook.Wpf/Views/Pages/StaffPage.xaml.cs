@@ -12,32 +12,11 @@ namespace GlowBook.Wpf.Views.Pages
     /// </summary>
     public partial class StaffPage : Page
     {
-        public StaffPage() { InitializeComponent(); }
-        private StaffViewModel VM => (StaffViewModel)DataContext;
-
-        private void New_Click(object s, RoutedEventArgs e)
+        public StaffPage()
         {
-            var item = new Staff { Name = "Nieuwe medewerker" };
-            VM.Items.Add(item);
-            Grid.SelectedItem = item;
-        }
-
-        private void Save_Click(object s, RoutedEventArgs e)
-        {
-            if (Grid.SelectedItem is Staff item)
-            {
-                try { VM.Save(item); DialogService.Info("Opgeslagen."); VM.Load(); }
-                catch (System.Exception ex) { DialogService.Error($"Opslaan mislukt: {ex.Message}"); }
-            }
-        }
-
-        private void Delete_Click(object s, RoutedEventArgs e)
-        {
-            if (Grid.SelectedItem is Staff item && DialogService.Confirm("Verwijderen?"))
-            {
-                try { VM.SoftDelete(item); VM.Items.Remove(item); }
-                catch (System.Exception ex) { DialogService.Error($"Verwijderen mislukt: {ex.Message}"); }
-            }
+            InitializeComponent();
+            DataContext = new StaffViewModel();
         }
     }
 }
+        
