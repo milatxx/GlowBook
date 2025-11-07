@@ -1,18 +1,25 @@
 ﻿<Window x:Class="GlowBook.Wpf.Views.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GlowBook – Login" Height="420" Width="420" ResizeMode="NoResize">
+        Title="GlowBook – Login"
+        Height="420" Width="420"
+        ResizeMode="NoResize">
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <!-- Titel -->
         <StackPanel Grid.Row="0" Margin="0,8,0,16" HorizontalAlignment="Center">
             <TextBlock Text="GlowBook" Style="{StaticResource H1}" HorizontalAlignment="Center" />
-            <TextBlock Text="Log in om verder te gaan" Foreground="{StaticResource White70}" HorizontalAlignment="Center"/>
+            <TextBlock Text="Log in om verder te gaan"
+                       Foreground="{StaticResource White70}"
+                       HorizontalAlignment="Center"/>
         </StackPanel>
 
+        <!-- Login card -->
         <Border Grid.Row="1" Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -25,17 +32,37 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Gebruiker" Foreground="#FFEC628B" Margin="0,0,12,12" VerticalAlignment="Center"/>
-                <TextBox x:Name="UserBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,12" Height="36" Text="admin@glowbook"/>
+                <!-- Gebruiker -->
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Gebruiker"
+                           Margin="0,0,12,12"
+                           VerticalAlignment="Center"
+                           Foreground="#FFEC628B"/>
+                <TextBox x:Name="UserBox"
+                         Grid.Row="0" Grid.Column="1"
+                         Margin="0,0,0,12" Height="36"
+                         ToolTip="E-mail of gebruikersnaam"
+                         TabIndex="0"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Wachtwoord" Foreground="#FFEC628B" Margin="0,0,12,12" VerticalAlignment="Center"/>
-                <PasswordBox x:Name="PwdBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,12" Height="36" Password="Admin123!"/>
+                <!-- Wachtwoord -->
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Wachtwoord"
+                           Margin="0,0,12,12"
+                           VerticalAlignment="Center"
+                           Foreground="#FFEC628B"/>
+                <PasswordBox x:Name="PwdBox"
+                             Grid.Row="1" Grid.Column="1"
+                             Margin="0,0,0,12" Height="36"
+                             ToolTip="Wachtwoord"
+                             TabIndex="1"/>
 
-                <Button Grid.Row="2" Grid.ColumnSpan="2" Content="Inloggen" Height="40" HorizontalAlignment="Stretch" Click="Login_Click"/>
+                <!-- Inloggen -->
+                <Button Grid.Row="2" Grid.ColumnSpan="2"
+                        Content="Inloggen" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Click="Login_Click"
+                        TabIndex="2"/>
             </Grid>
         </Border>
-
-        <TextBlock Grid.Row="2" Text="Test inlog: admin@glowbook / Admin123!" Opacity="0.85" HorizontalAlignment="Center" Margin="0,16,0,0"/>
-
     </Grid>
 </Window>

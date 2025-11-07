@@ -5,6 +5,7 @@
              Startup="OnStartup"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="B2V" />
         <Color x:Key="BabyPinkColor">#FFC1CC</Color>
         <SolidColorBrush x:Key="BabyPink" Color="{StaticResource BabyPinkColor}" />
         <SolidColorBrush x:Key="PinkDark" Color="#FFB0BD" />
@@ -62,7 +63,26 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="#FFEC628B"/>
         </Style>
-         
+
+        
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+
+        
+        <Style TargetType="DataGrid">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="GridLinesVisibility" Value="Vertical"/>
+        </Style>
+
+
     </Application.Resources>
 </Application>
 

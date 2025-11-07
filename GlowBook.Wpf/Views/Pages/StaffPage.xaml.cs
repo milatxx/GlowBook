@@ -1,5 +1,4 @@
-﻿using GlowBook.Model.Entities;
-using GlowBook.Wpf.Services;
+﻿
 using GlowBook.Wpf.ViewModels;
 using System.Windows;
 using System.Windows.Controls;

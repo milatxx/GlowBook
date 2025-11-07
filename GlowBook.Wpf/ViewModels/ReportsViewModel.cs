@@ -115,16 +115,22 @@ namespace GlowBook.Wpf.ViewModels
                 })
                 .ToList();
 
+            var inv = CultureInfo.InvariantCulture;
             var sb = new StringBuilder();
             sb.AppendLine("Date;Customer;Service;Price;Qty;Total");
+
             foreach (var r in rows)
             {
-                sb.AppendLine($"{r.Date:yyyy-MM-dd HH\\:mm};{r.Customer};{r.Service};{r.Price.ToString("0.00", CultureInfo.InvariantCulture)};{r.Qty};{r.Total.ToString("0.00", CultureInfo.InvariantCulture)}");
+                var dateStr = r.Date.ToString("yyyy-MM-dd HH:mm", inv);
+                var priceStr = r.Price.ToString("0.00", inv);
+                var totalStr = r.Total.ToString("0.00", inv);
+                sb.AppendLine($"{dateStr};{r.Customer};{r.Service};{priceStr};{r.Qty};{totalStr}");
             }
 
             File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
             return path;
         }
+
 
         public string ExportPdf(string path)
         {

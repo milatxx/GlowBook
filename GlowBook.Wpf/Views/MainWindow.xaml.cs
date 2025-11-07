@@ -21,6 +21,7 @@ namespace GlowBook.Wpf.Views
             InitializeComponent();
             _user = user;
             _userManager = App.Services.GetRequiredService<UserManager<ApplicationUser>>();
+            GlowBook.Wpf.Helpers.AuthSession.CurrentUser = _user;
             Loaded += async (_, __) =>
             {
                 await ApplyRoleVisibilityAsync();
@@ -74,9 +75,9 @@ namespace GlowBook.Wpf.Views
 
             if (!ok)
             return;
-            
 
-            
+            GlowBook.Wpf.Helpers.AuthSession.CurrentUser = login.AuthenticatedUser!;
+
             // succesvol opnieuw ingelogd: open nieuw mainwinwow met nieuwe user
             var newMain = new MainWindow(login.AuthenticatedUser!);
 

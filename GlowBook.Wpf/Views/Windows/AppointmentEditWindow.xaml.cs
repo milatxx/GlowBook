@@ -2,9 +2,8 @@
 using GlowBook.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 using System.Windows;
-
-
 
 namespace GlowBook.Wpf.Views.Windows
 {
@@ -16,6 +15,7 @@ namespace GlowBook.Wpf.Views.Windows
         private readonly int _id;
         private readonly AppDbContext _db;
         private Appointment _appointment = null!;
+
         public AppointmentEditWindow(int appointmentId)
         {
             InitializeComponent();
@@ -29,7 +29,7 @@ namespace GlowBook.Wpf.Views.Windows
 
         private void LoadData()
         {
-            // basislijsten
+            // basislijsten 
             CmbCustomer.ItemsSource = _db.Customers.Where(c => !c.IsDeleted).OrderBy(c => c.Name).ToList();
             CmbStaff.ItemsSource = _db.Staff.Where(s => !s.IsDeleted).OrderBy(s => s.Name).ToList();
             CmbService.ItemsSource = _db.Services.Where(s => !s.IsDeleted).OrderBy(s => s.Name).ToList();
@@ -39,7 +39,15 @@ namespace GlowBook.Wpf.Views.Windows
                 .Include(a => a.Customer)
                 .Include(a => a.Staff)
                 .Include(a => a.AppointmentServices).ThenInclude(x => x.Service)
-                .First(a => a.Id == _id);
+                .FirstOrDefault(a => a.Id == _id)!;
+
+            if (_appointment == null)
+            {
+                MessageBox.Show("Afspraak niet gevonden.", "GlowBook", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DialogResult = false;
+                Close();
+                return;
+            }
 
             CmbCustomer.SelectedValue = _appointment.CustomerId;
             CmbStaff.SelectedValue = _appointment.StaffId;
@@ -48,11 +56,11 @@ namespace GlowBook.Wpf.Views.Windows
             if (firstSvc != null)
             {
                 CmbService.SelectedValue = firstSvc.ServiceId;
-                TxtDuration.Text = firstSvc.Service.DurationMin.ToString();
+                TxtDuration.Text = firstSvc.Service.DurationMin.ToString(CultureInfo.InvariantCulture);
             }
 
             DpDate.SelectedDate = _appointment.Start.Date;
-            TxtStart.Text = _appointment.Start.ToString("HH\\:mm");
+            TxtStart.Text = _appointment.Start.ToString("HH\\:mm", CultureInfo.InvariantCulture);
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
@@ -61,13 +69,20 @@ namespace GlowBook.Wpf.Views.Windows
             {
                 if (DpDate.SelectedDate == null)
                 {
-                    MessageBox.Show("Kies een datum."); return;
+                    MessageBox.Show("Kies een datum.");
+                    return;
                 }
-                if (!TimeSpan.TryParse(TxtStart.Text, out var startTime))
+
+                // Strikt 24u-formaat HH:MM (bv. 09:30)
+                if (!TimeSpan.TryParseExact(TxtStart.Text, "hh\\:mm",
+                    CultureInfo.InvariantCulture, out var startTime))
                 {
-                    MessageBox.Show("Ongeldige starttijd (bv. 09:30)."); return;
+                    MessageBox.Show("Ongeldige starttijd (gebruik HH:MM, bv. 09:30).");
+                    return;
                 }
-                if (!int.TryParse(TxtDuration.Text, out var durMin)) durMin = 60;
+
+                if (!int.TryParse(TxtDuration.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var durMin))
+                    durMin = 60;
 
                 var date = DpDate.SelectedDate.Value;
                 var start = date.Date + startTime;
@@ -88,7 +103,6 @@ namespace GlowBook.Wpf.Views.Windows
                 var close = TimeSpan.FromHours(18);
                 if (start.TimeOfDay < open || end.TimeOfDay > close)
                 {
-
                     MessageBox.Show("Buiten openingstijd (09:00–18:00).");
                     return;
                 }
@@ -102,7 +116,7 @@ namespace GlowBook.Wpf.Views.Windows
                     return;
                 }
 
-                // Overlap (sluit geannuleerde afspraken uit en sluit huidige afspraak uit)
+                // Overlap 
                 bool conflict = await _db.Appointments
                     .Where(a => a.StaffId == staffId.Value && a.Status != "Cancelled" && a.Id != _appointment.Id)
                     .AnyAsync(a => start < a.End && end > a.Start);
@@ -141,7 +155,8 @@ namespace GlowBook.Wpf.Views.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Bewaren mislukt: " + ex.Message, "GlowBook", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Bewaren mislukt: " + ex.Message, "GlowBook",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

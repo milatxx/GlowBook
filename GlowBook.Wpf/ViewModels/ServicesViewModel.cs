@@ -35,7 +35,7 @@ namespace GlowBook.Wpf.ViewModels
 
             ReloadCommand = new RelayCommand(_ => Load());
             AddCommand = new RelayCommand(_ => Add());
-            SaveCommand = new RelayCommand(_ => { if (SelectedService != null) Save(SelectedService); });
+            SaveCommand = new RelayCommand(_ => Save(SelectedService!), _ => SelectedService != null);
             DeleteCommand = new RelayCommand(_ =>
             {
                 if (SelectedService != null)

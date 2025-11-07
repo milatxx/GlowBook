@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using static GlowBook.Wpf.Services.DialogService;
+using GlowBook.Wpf.Helpers;
 
 namespace GlowBook.Wpf.Views
 {
@@ -53,6 +54,8 @@ namespace GlowBook.Wpf.Views
                 {
                     // faal teller resetten
                     await _userManager.ResetAccessFailedCountAsync(user);
+
+                    AuthSession.CurrentUser = user;
 
                     AuthenticatedUser = user;
                     DialogResult = true;
