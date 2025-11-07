@@ -6,6 +6,7 @@ namespace GlowBook.Model.Entities
     {
         public string Name { get; set; } = "";
         public string Role { get; set; } = "Employee";
+        public string? Email { get; set; }
 
         public bool IsActive { get; set; } = true;
 

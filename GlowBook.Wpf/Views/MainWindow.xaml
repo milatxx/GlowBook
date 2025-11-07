@@ -12,11 +12,12 @@
                 <TextBlock Text="GlowBook" Style="{StaticResource H1}"/>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button x:Name="btnHome"      Content="Home"      Click="Home_Click"         Margin="0,0,10,0"/>
-                    <Button x:Name="btnCal"       Content="Kalender"  Click="Appointments_Click" Margin="0,0,10,0"/>
-                    <Button x:Name="btnCustomers" Content="Klanten"   Click="Customers_Click"    Margin="0,0,10,0"/>
-                    <Button x:Name="btnServices"  Content="Diensten"  Click="Services_Click"     Margin="0,0,10,0"/>
-                    <Button x:Name="btnReports"   Content="Rapporten" Click="Reports_Click"      Margin="0,0,10,0"/>
+                    <Button x:Name="btnHome"      Content="Home"        Click="Home_Click"         Margin="0,0,10,0"/>
+                    <Button x:Name="btnCal"       Content="Kalender"    Click="Appointments_Click" Margin="0,0,10,0"/>
+                    <Button x:Name="btnCustomers" Content="Klanten"     Click="Customers_Click"    Margin="0,0,10,0"/>
+                    <Button x:Name="btnServices"  Content="Diensten"    Click="Services_Click"     Margin="0,0,10,0"/>
+                    <Button x:Name="btnStaff"     Content="Medewerkers" Click="Staff_Click"        Margin="0,0,10,0"/>
+                    <Button x:Name="btnReports"   Content="Rapporten"   Click="Reports_Click"      Margin="0,0,10,0"/>
                     <Button Content="Uitloggen"   Click="Logout_Click"/>
                 </StackPanel>
 

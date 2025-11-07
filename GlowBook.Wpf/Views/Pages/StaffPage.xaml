@@ -6,14 +6,17 @@
 
     <DockPanel Margin="16">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-            <Button Content="Nieuw"   Margin="0,0,8,0" Command="{Binding AddCommand}"/>
-            <Button Content="Opslaan" Margin="0,0,8,0" Command="{Binding SaveCommand}"/>
-            <Button Content="Verwijderen"              Command="{Binding DeleteCommand}"/>
+            <Button Content="Nieuw"         Margin="0,0,8,0" Command="{Binding AddCommand}"/>
+            <Button Content="Opslaan"       Margin="0,0,8,0" Command="{Binding SaveCommand}"/>
+            <Button Content="Verwijderen"   Margin="0,0,8,0" Command="{Binding DeleteCommand}"/>
+            <Button Content="Maak Admin"    Margin="0,0,8,0" Command="{Binding MakeAdminCommand}"/>
+            <Button Content="Maak Employee" Margin="0,0,8,0" Command="{Binding MakeEmployeeCommand}"/>
         </StackPanel>
 
         <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedStaff, Mode=TwoWay}" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,8,0,0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Naam" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                <DataGridTextColumn Header="Email" Binding="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="240"/>
                 <DataGridTextColumn Header="Rol"  Binding="{Binding Role, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
             </DataGrid.Columns>
         </DataGrid>

@@ -47,6 +47,9 @@ namespace GlowBook.Wpf.Views
                 // kalender en klanten zichtbaarr voor beide
                 btnCal.Visibility = Visibility.Visible;
                 btnCustomers.Visibility = Visibility.Visible;
+                btnStaff.Visibility = Visibility.Visible; // tonen in de toolbar
+                btnStaff.IsEnabled = isAdmin;            // enkel Admin kan ernaartoe
+
             }
 
             catch (System.Exception ex)
@@ -59,6 +62,8 @@ namespace GlowBook.Wpf.Views
         private void Appointments_Click(object s, RoutedEventArgs e) => MainFrame.Content = new AppointmentsPage();
         private void Customers_Click(object s, RoutedEventArgs e) => MainFrame.Content = new CustomersPage();
         private void Services_Click(object s, RoutedEventArgs e) => MainFrame.Content = new ServicesPage();
+        private void Staff_Click(object s, RoutedEventArgs e) => MainFrame.Content = new StaffPage();
+
         private void Reports_Click(object s, RoutedEventArgs e) => MainFrame.Content = new ReportsPage();
 
         private void Logout_Click(object s, RoutedEventArgs e)
