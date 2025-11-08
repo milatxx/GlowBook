@@ -161,8 +161,15 @@ namespace GlowBook.Wpf
                     return;
                 }
 
+                var user = login.AuthenticatedUser;
+                if (user is null)
+                {
+                    Shutdown();
+                    return;
+                }
+
                 Debug.WriteLine("Ok, main window on the way!");
-                var main = new MainWindow(login.AuthenticatedUser);         
+                var main = new MainWindow(user);         
                 Application.Current.MainWindow = main;
                 Application.Current.MainWindow.Show();
 
