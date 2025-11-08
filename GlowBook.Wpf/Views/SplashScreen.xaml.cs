@@ -12,12 +12,7 @@ namespace GlowBook.Wpf.Views
         public SplashScreen()
         {
             InitializeComponent();
-            Loaded += async (_, __) =>
-            {
-                await Task.Delay(1500);
-                new LoginWindow().Show();
-                Close();
-            };
+           
         }
     }
 }
