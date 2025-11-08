@@ -6,6 +6,9 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Windows;
+using GlowBook.Wpf.Helpers;
+using GlowBook.Wpf.Services;
+using GlowBook.Wpf.Views.Pages;
 
 namespace GlowBook.Wpf.ViewModels
 {
@@ -17,8 +20,13 @@ namespace GlowBook.Wpf.ViewModels
         public int TopServiceCount { get; private set; }
         public decimal RevenueThisWeek { get; private set; }
 
+        public RelayCommand OpenCustomersCommand { get; } = null!;
+        public RelayCommand OpenReportsCommand { get; } = null!;
+
         public HomeViewModel()
         {
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+                return;
             var db = App.Services.GetRequiredService<AppDbContext>();
             var today = DateTime.Today;
             var tomorrow = today.AddDays(1);
@@ -53,6 +61,22 @@ namespace GlowBook.Wpf.ViewModels
                 .Include(x => x.Service).Include(x => x.Appointment)
                 .Where(x => x.Appointment.Start >= weekStart)
                 .Sum(x => x.Service.Price * x.Qty);
+
+            OpenCustomersCommand = new RelayCommand(OpenCustomers);
+            OpenReportsCommand = new RelayCommand(OpenReports);
         }
+
+
+        private void OpenCustomers(object? parameter)
+        {
+            GlowBook.Wpf.Helpers.NavigationHelper.Navigate(new GlowBook.Wpf.Views.Pages.CustomersPage());
+        }
+
+        private void OpenReports(object? parameter)
+        {
+            GlowBook.Wpf.Helpers.NavigationHelper.Navigate(new GlowBook.Wpf.Views.Pages.ReportsPage());
+        }
+
+
     }
 }

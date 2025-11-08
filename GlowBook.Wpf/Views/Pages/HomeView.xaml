@@ -46,7 +46,7 @@
                     <StackPanel>
                         <TextBlock Text="Klanten" Style="{StaticResource CardTitle}"/>
                         <TextBlock Text="{Binding CustomerCount, StringFormat={}{0} totaal}" Margin="0,8,0,0"/>
-                        <Button Content="Beheer klanten" Margin="0,12,0,0" Width="180"/>
+                        <Button Content="Beheer klanten" Margin="0,12,0,0" Width="180" Command="{Binding OpenCustomersCommand}" />
                     </StackPanel>
                 </Border>
 
@@ -62,7 +62,7 @@
                     <StackPanel>
                         <TextBlock Text="Omzet deze week" Style="{StaticResource CardTitle}"/>
                         <TextBlock Text="{Binding RevenueThisWeek, StringFormat=€ {0:N2}}" Margin="0,8,0,0"/>
-                        <Button Content="Bekijk rapport" Margin="0,12,0,0" Width="180"/>
+                        <Button Content="Bekijk rapport" Margin="0,12,0,0" Width="180" Command="{Binding OpenReportsCommand}" />
                     </StackPanel>
                 </Border>
 

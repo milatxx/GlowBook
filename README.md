@@ -16,8 +16,8 @@ Gerealiseerd in samenwerking met **Glowy Skin Salon**.
 ## Techniek
 - .NET 9.x – WPF (XAML + C#, MVVM)
 - Solution met 2 projecten:
-  - **GlowBook.Model** ? modellen, Entity Framework, Identity, migraties  
-  - **GlowBook.Wpf** ? UI, ViewModels, services en logica
+  - **GlowBook.Model** : modellen, Entity Framework, Identity, migraties  
+  - **GlowBook.Wpf** : UI, ViewModels, services en logica
 - **Entity Framework Core** met eigen `AppDbContext` (afgeleid van `IdentityDbContext<ApplicationUser>`)
 - **Seeders** in `Seed.cs` vullen dummydata in voor testgebruik
 - **Soft delete** via `BaseEntity`
