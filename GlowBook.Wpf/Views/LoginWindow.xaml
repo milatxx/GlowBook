@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="GlowBook – Login"
         Height="420" Width="420"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Style="{StaticResource {x:Type Window}}"
+        >
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

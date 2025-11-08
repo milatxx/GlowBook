@@ -19,7 +19,7 @@ namespace GlowBook.Wpf.ViewModels
 
         public HomeViewModel()
         {
-            using var db = App.Services.GetRequiredService<AppDbContext>();
+            var db = App.Services.GetRequiredService<AppDbContext>();
             var today = DateTime.Today;
             var tomorrow = today.AddDays(1);
 

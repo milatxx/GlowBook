@@ -56,7 +56,7 @@ namespace GlowBook.Wpf.ViewModels
         public void Load()
         {
             Items.Clear();
-            using var db = NewDb();
+            var db = NewDb();
             var data = db.Customers.AsNoTracking()
                                    .Where(c => !c.IsDeleted)
                                    .OrderBy(c => c.Name)
@@ -68,7 +68,7 @@ namespace GlowBook.Wpf.ViewModels
 
         public void Save(Customer c)
         {
-            using var db = NewDb();
+            var db = NewDb();
             if (c.Id == 0) db.Customers.Add(c);
             else db.Customers.Update(c);
             db.SaveChanges();
@@ -77,7 +77,7 @@ namespace GlowBook.Wpf.ViewModels
         // Softdelete
         public void SoftDelete(Customer c)
         {
-            using var db = NewDb();
+            var db = NewDb();
             var entity = db.Customers.First(x => x.Id == c.Id);
             entity.IsDeleted = true;
             db.SaveChanges();

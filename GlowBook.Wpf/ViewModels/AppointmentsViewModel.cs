@@ -21,7 +21,7 @@ namespace GlowBook.Wpf.ViewModels
         public void Load()
         {
             Items.Clear();
-            using var db = NewDb();
+            var db = NewDb();
 
             var data = db.Appointments
                 .Include(a => a.Customer)

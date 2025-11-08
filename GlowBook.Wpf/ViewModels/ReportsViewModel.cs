@@ -54,7 +54,7 @@ namespace GlowBook.Wpf.ViewModels
 
         public void Calculate()
         {
-            using var db = Db();
+            var db = Db();
 
             var q = db.AppointmentServices
                 .Include(x => x.Service)
@@ -65,12 +65,12 @@ namespace GlowBook.Wpf.ViewModels
                             && x.Appointment.Start <= EndOfDay(To));
 
             // voorkom InvalidOperation bij lege reeks
-            RevenueTotal = q.Select(x => x.Service.Price * x.Qty).DefaultIfEmpty(0m).Sum();
+            RevenueTotal = q.Sum(x => x.Service.Price * x.Qty);
         }
 
         public void RefreshRevenuePerService_QuerySyntax()
         {
-            using var db = Db();
+            var db = Db();
 
             // query syntax
             var q =
@@ -94,7 +94,7 @@ namespace GlowBook.Wpf.ViewModels
 
         public string ExportCsv(string path)
         {
-            using var db = Db();
+            var db = Db();
 
             var rows = db.AppointmentServices
                 .Include(x => x.Service)

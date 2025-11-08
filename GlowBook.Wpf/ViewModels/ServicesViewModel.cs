@@ -53,7 +53,7 @@ namespace GlowBook.Wpf.ViewModels
         public void Load()
     {
         Items.Clear();
-        using var db = NewDb();
+        var db = NewDb();
         foreach (var s in db.Services.AsNoTracking().Where(x => !x.IsDeleted).OrderBy(x => x.Name))
             Items.Add(s);
             SelectedService = Items.FirstOrDefault();
@@ -61,14 +61,14 @@ namespace GlowBook.Wpf.ViewModels
 
     public void Save(Service s)
     {
-        using var db = NewDb();
+        var db = NewDb();
         if (s.Id == 0) db.Services.Add(s); else db.Services.Update(s);
         db.SaveChanges();
     }
 
     public void SoftDelete(Service s)
     {
-        using var db = NewDb();
+        var db = NewDb();
         var entity = db.Services.First(x => x.Id == s.Id);
         entity.IsDeleted = true;
         db.SaveChanges();

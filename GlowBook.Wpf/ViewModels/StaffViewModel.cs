@@ -79,7 +79,7 @@ namespace GlowBook.Wpf.ViewModels
         public void Load()
         {
             Items.Clear();
-            using var db = NewDb();
+            var db = NewDb();
             foreach (var s in db.Staff.AsNoTracking().OrderBy(x => x.Name))
                 Items.Add(s);
 
@@ -88,14 +88,14 @@ namespace GlowBook.Wpf.ViewModels
 
         public void Save(Staff s)
         {
-            using var db = NewDb();
+            var db = NewDb();
             if (s.Id == 0) db.Staff.Add(s); else db.Staff.Update(s);
             db.SaveChanges();
         }
 
         public void SoftDelete(Staff s)
         {
-            using var db = NewDb();
+            var db = NewDb();
             var entity = db.Staff.First(x => x.Id == s.Id);
             entity.IsDeleted = true;
             db.SaveChanges();

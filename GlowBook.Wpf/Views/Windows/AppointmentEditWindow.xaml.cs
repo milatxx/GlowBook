@@ -2,6 +2,7 @@
 using GlowBook.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 
@@ -12,11 +13,11 @@ namespace GlowBook.Wpf.Views.Windows
     /// </summary>
     public partial class AppointmentEditWindow : Window
     {
-        private readonly int _id;
+        private readonly int? _id;
         private readonly AppDbContext _db;
         private Appointment _appointment = null!;
 
-        public AppointmentEditWindow(int appointmentId)
+        public AppointmentEditWindow(int? appointmentId)
         {
             InitializeComponent();
             Owner = Application.Current.MainWindow;
@@ -33,6 +34,13 @@ namespace GlowBook.Wpf.Views.Windows
             CmbCustomer.ItemsSource = _db.Customers.Where(c => !c.IsDeleted).OrderBy(c => c.Name).ToList();
             CmbStaff.ItemsSource = _db.Staff.Where(s => !s.IsDeleted).OrderBy(s => s.Name).ToList();
             CmbService.ItemsSource = _db.Services.Where(s => !s.IsDeleted).OrderBy(s => s.Name).ToList();
+
+            if (_id == null)
+            {
+
+                _appointment = new Appointment { };
+                return;
+            }
 
             // afspraak plus eerste dienst
             _appointment = _db.Appointments
@@ -133,6 +141,17 @@ namespace GlowBook.Wpf.Views.Windows
                 _appointment.Start = start;
                 _appointment.End = end;
 
+                if (_id == null)
+                {
+                    _db.Appointments.Add(_appointment).State = EntityState.Added;
+                }
+                else
+                {
+                    _db.Appointments.Add(_appointment).State = EntityState.Modified;
+                }
+                    
+                _db.SaveChanges();
+
                 var link = await _db.AppointmentServices
                               .FirstOrDefaultAsync(x => x.AppointmentId == _appointment.Id);
                 if (link == null)
@@ -155,6 +174,7 @@ namespace GlowBook.Wpf.Views.Windows
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 MessageBox.Show("Bewaren mislukt: " + ex.Message, "GlowBook",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }

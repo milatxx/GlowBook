@@ -19,6 +19,13 @@ namespace GlowBook.Wpf.Views.Pages
 
         private AppointmentsViewModel VM => (AppointmentsViewModel)DataContext;
 
+        private void New_Click(object sender, RoutedEventArgs e) {
+
+            var dlg = new AppointmentEditWindow(null);
+            if (dlg.ShowDialog() == true)
+                VM.Load();
+        }
+
         private void Reload_Click(object sender, RoutedEventArgs e) => VM.Load();
 
         private void Edit_Click(object sender, RoutedEventArgs e)

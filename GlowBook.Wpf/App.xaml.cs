@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,11 @@ namespace GlowBook.Wpf
         public static IServiceProvider Services => HostApp.Services;
 
         private async void OnStartup(object sender, StartupEventArgs e)
-        {
+        {   
+            var splash = new Views.SplashScreen();
+            splash.Show();
+
+            Debug.WriteLine("Start applicatie!");
             HostApp = Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
@@ -56,17 +61,21 @@ namespace GlowBook.Wpf
                 })
                 .Build();
 
+            Debug.WriteLine("Databank migratie start");
+
             // DB migreren plus seed
             try
             {
                 using var scope = Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                await db.Database.MigrateAsync();
 
-
+                var hasMigrations = (await db.Database.GetPendingMigrationsAsync()).Any();
+                if (hasMigrations)
+                    await db.Database.MigrateAsync();
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     $"De databank kon niet worden bijgewerkt:\n{ex.Message}",
                     "Database fout",
@@ -130,6 +139,7 @@ namespace GlowBook.Wpf
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show($"Seeden van users/rollen mislukt: {ex.Message}", "Seed fout",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
@@ -137,27 +147,29 @@ namespace GlowBook.Wpf
 
             // splash -> login -> main
             try
-            { 
-                var splash = new Views.SplashScreen();
-                splash.Show();
-                splash.Close();
+            {
+               
 
                 var login = new Views.LoginWindow();
-                var ok = login.ShowDialog() == true;
 
-                if (!ok)
+                splash.Close();
+
+                if (!login.ShowDialog() ?? false)
                 {
+                    Debug.WriteLine("Niet ok, shutdown");
                     Shutdown();
                     return;
                 }
 
-                var main = new MainWindow(login.AuthenticatedUser!);         
+                Debug.WriteLine("Ok, main window on the way!");
+                var main = new MainWindow(login.AuthenticatedUser);         
                 Application.Current.MainWindow = main;
-                main.Show();
+                Application.Current.MainWindow.Show();
 
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     $"Er trad een fout op tijdens het starten van de UI:\n{ex.Message}",
                     "Startfout",
